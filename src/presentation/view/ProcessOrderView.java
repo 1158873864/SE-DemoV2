@@ -15,6 +15,7 @@ import java.util.Vector;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -34,13 +35,9 @@ public class ProcessOrderView extends JPanel{
 	//酒店编号，由上一级控制器传入，此处默认为1
 	private int hotelId = 1;
 	
-	private ProcessOrderViewController controller;
+	private ProcessOrder processOrder;
 	
 	private JComboBox<String> orderTypeComboBox;
-	
-	private JLabel delayLabel;
-	
-	private JTextField delayTextField;
 	
 	private JButton delayButton;
 	
@@ -50,8 +47,20 @@ public class ProcessOrderView extends JPanel{
 	
 	private DefaultTableModel orderListModel;
 	
+	private JPanel delayPanel;
+	
+	private JLabel delayLabel;
+	
+	private JTextField delayTextField;
+	
+	private JButton delayProcessButton;
+	
+	private JButton cancelButton;
+	
+	private JFrame delayFrame;
+	
 	public ProcessOrderView(ProcessOrderViewController controller){
-		this.controller = controller;
+		this.processOrder = controller;
 		this.setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
 		
 		//初始化订单类型选择框
@@ -91,47 +100,43 @@ public class ProcessOrderView extends JPanel{
 					if(selected == "所有类型"){
 						//更新订单列表
 						orderListModel.setRowCount(0);
-						for (OrderVo orderVo : controller.getAllOrders(hotelId)) {
+						for (OrderVo orderVo : processOrder.getAllOrders(hotelId)) {
 							orderListModel.addRow(orderVo);
 						}
 						
 						//设置控件可用类型
-						delayTextField.setEnabled(false);
 						delayButton.setEnabled(false);
 						entryButton.setEnabled(false);
 						
 					}else if(selected == "未执行订单"){
 						//更新订单列表
 						orderListModel.setRowCount(0);
-						for (OrderVo orderVo : controller.getUnfinishedOrders(hotelId)) {
+						for (OrderVo orderVo : processOrder.getUnfinishedOrders(hotelId)) {
 							orderListModel.addRow(orderVo);
 						}
 						
 						//设置控件可用类型
-						delayTextField.setEnabled(false);
 						delayButton.setEnabled(false);
 						entryButton.setEnabled(true);
 						
 					}else if(selected == "已执行订单"){
 						//更新订单列表
 						orderListModel.setRowCount(0);
-						for (OrderVo orderVo : controller.getFinishedOrders(hotelId)) {
+						for (OrderVo orderVo : processOrder.getFinishedOrders(hotelId)) {
 							orderListModel.addRow(orderVo);
 						}
 						
 						//设置控件可用类型
-						delayTextField.setEnabled(false);
 						delayButton.setEnabled(false);
 						entryButton.setEnabled(false);
 					}else if(selected == "异常订单"){
 						//更新订单列表
 						orderListModel.setRowCount(0);
-						for (OrderVo orderVo : controller.getAbnormalOrders(hotelId)) {
+						for (OrderVo orderVo : processOrder.getAbnormalOrders(hotelId)) {
 							orderListModel.addRow(orderVo);
 						}
 						
 						//设置控件可用类型
-						delayTextField.setEnabled(true);
 						delayButton.setEnabled(true);
 						entryButton.setEnabled(false);
 					}
@@ -150,16 +155,22 @@ public class ProcessOrderView extends JPanel{
 	}
 	
 	private void initOrderProcessButtons(){
-		delayLabel = new JLabel("订单延期至：(yyyy/MM/dd HH:mm:ss)");
-		delayTextField = new JTextField(10);
-		
-		delayButton = new JButton("延期入住");
+	
+		delayButton = new JButton("订单延期");
 		//添加按钮监听事件
 		delayButton.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent arg0) {
-				// TODO Auto-generated method stub
-				delayOrder();
+				
+				int index = orderTable.getSelectedRow();
+				
+				if(index == -1){
+					JOptionPane.showMessageDialog(null, "请选择订单！","", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				
+				//界面跳转
+				processOrder.openDelayView(index);
 			}
 		});
 		
@@ -176,12 +187,9 @@ public class ProcessOrderView extends JPanel{
 		//添加订单处理栏
 		JPanel processPanel = new JPanel();
 		processPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-		processPanel.add(delayLabel);
-		processPanel.add(delayTextField);
 		processPanel.add(delayButton);
 		processPanel.add(entryButton);
 		
-		delayTextField.setEnabled(false);
 		delayButton.setEnabled(false);
 		entryButton.setEnabled(false);
 		
@@ -203,7 +211,7 @@ public class ProcessOrderView extends JPanel{
 	
 		//数据
 		Vector<OrderVo> vData = new Vector<OrderVo>();
-		vData.addAll(controller.getAllOrders(hotelId));
+		vData.addAll(processOrder.getAllOrders(hotelId));
 		//模型
 		orderListModel = new DefaultTableModel(vData, vColumns);
 		//表格
@@ -221,35 +229,6 @@ public class ProcessOrderView extends JPanel{
 		this.add(scrollPane);
 	}
 	
-	private void delayOrder() {
-		int index = orderTable.getSelectedRow();
-		
-		if(index == -1){
-			JOptionPane.showMessageDialog(null, "请选择订单！","", JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-		
-		String delayTime = delayTextField.getText();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-		try {
-			Date date = sdf.parse(delayTime);
-		} catch (ParseException e) {
-			JOptionPane.showMessageDialog(null, "请按格式（yyyy/MM/dd HH:mm:ss）填写时间！","", JOptionPane.ERROR_MESSAGE);
-			delayTextField.setText("");
-			return;
-		}
-		
-		int orderNo = Integer.valueOf((String)orderTable.getValueAt(index, 0));
-		if(controller.processAbnormalOrder(orderNo,delayTime)){
-			orderListModel.removeRow(index);
-			delayTextField.setText("");
-		}else{
-			JOptionPane.showMessageDialog(null, "延期异常订单失败！","", JOptionPane.ERROR_MESSAGE);
-		}
-		
-	}
-	
-
 	private void processOrder() {
 		int index = orderTable.getSelectedRow();
 		if(index == -1){
@@ -258,11 +237,81 @@ public class ProcessOrderView extends JPanel{
 		}
 		
 		int orderNo=Integer.valueOf((String)orderTable.getValueAt(index, 0));
-		if(controller.processUnfinishedOrder(orderNo)){
+		if(processOrder.processUnfinishedOrder(orderNo)){
 			orderListModel.removeRow(index);
 		}else{
 			JOptionPane.showMessageDialog(null, "办理用户入住失败！","", JOptionPane.ERROR_MESSAGE);
 		}
+	}
+	
+	public void openDelayView(int index){
+		final int rowIndex = index;
+		final int orderNo =Integer.valueOf((String)orderTable.getValueAt(index, 0));
+		
+		delayFrame = new JFrame();
+		delayFrame.setSize(400, 200);
+		delayFrame.setLocation(400, 400);
+		
+		delayPanel = new JPanel();
+		delayPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+		delayLabel = new JLabel("订单延期至：（yyyy/MM/dd HH:mm:ss）");
+		delayTextField = new JTextField(10);
+		delayProcessButton = new JButton("延期");
+		//处理订单延期
+		delayProcessButton.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent arg0) {
+				
+				if(delayOrder(orderNo)){
+					orderListModel.removeRow(rowIndex);
+				}
+				
+			}
+		});
+		cancelButton = new JButton("取消");
+		//取消订单延期处理
+		cancelButton.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent e) {
+				//关闭窗口
+				delayFrame.dispose();
+				
+			}
+		});
+		delayPanel = new JPanel();
+		delayPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+		delayPanel.add(delayLabel);
+		delayPanel.add(delayTextField);
+		delayPanel.add(delayProcessButton);
+		delayPanel.add(cancelButton);
+		
+		delayFrame.getContentPane().add(delayPanel);
+		delayFrame.setVisible(true);
+		
+	}
+	
+	//处理订单延期
+	private boolean delayOrder(int orderNo) {
+	
+		String delayTime = delayTextField.getText();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		try {
+			Date date = sdf.parse(delayTime);
+		} catch (ParseException e) {
+			JOptionPane.showMessageDialog(null, "请按格式（yyyy/MM/dd HH:mm:ss）填写时间！","", JOptionPane.ERROR_MESSAGE);
+			delayTextField.setText("");
+			return false;
+		}
+		
+		
+		if(processOrder.processAbnormalOrder(orderNo,delayTime)){	
+			delayFrame.dispose();
+			return true;
+		}else{
+			JOptionPane.showMessageDialog(null, "延期异常订单失败！","", JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
+		
 	}
 
 }

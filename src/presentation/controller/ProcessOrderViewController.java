@@ -3,10 +3,9 @@ package presentation.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JButton;
-
 import po.OrderPo;
 import po.UserPo;
+import presentation.view.ProcessOrder;
 import presentation.view.ProcessOrderView;
 import service.OrderService;
 import service.UserService;
@@ -14,15 +13,21 @@ import service.impl.OrderServiceImpl;
 import service.impl.UserServiceImpl;
 import vo.OrderVo;
 
-public class ProcessOrderViewController {
+public class ProcessOrderViewController implements ProcessOrder{
 	
 	private OrderService orderService;
 	
 	private UserService userService;
 	
+	private ProcessOrderView view;
+	
 	public ProcessOrderViewController(){
 		orderService = new OrderServiceImpl();
 		userService = new UserServiceImpl();
+	}
+	
+	public void setView(ProcessOrderView view){
+		this.view = view;
 	}
 	
 	/**
@@ -122,7 +127,16 @@ public class ProcessOrderViewController {
 		return false;
 		
 	}
+
+	/**
+	 * 打开订单延期界面
+	 */
+	public void openDelayView(int index) {
+		
+		view.openDelayView(index);
+		
+	}
 	
-
-
+	
+	
 }
