@@ -249,7 +249,7 @@ public class ProcessOrderView extends JPanel{
 		final int orderNo =Integer.valueOf((String)orderTable.getValueAt(index, 0));
 		
 		delayFrame = new JFrame();
-		delayFrame.setSize(400, 200);
+		delayFrame.setSize(600, 80);
 		delayFrame.setLocation(400, 400);
 		
 		delayPanel = new JPanel();
