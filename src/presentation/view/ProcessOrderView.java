@@ -264,4 +264,5 @@ public class ProcessOrderView extends JPanel{
 			JOptionPane.showMessageDialog(null, "办理用户入住失败！","", JOptionPane.ERROR_MESSAGE);
 		}
 	}
+
 }
