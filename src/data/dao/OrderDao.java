@@ -7,14 +7,32 @@ import po.OrderPo;
 public interface OrderDao {
 	
 	/**
-	 * @return	从数据文件中读取订单数据
+	 * @param orderId
+	 * @return	获取订单信息
 	 */
-	public List<OrderPo> readFromFile();
+	public OrderPo getOrder(int orderId);
 	
 	/**
-	 * 向数据文件中写入订单数据
-	 * @param list	
+	 * @return	获取酒店订单列表
 	 */
-	public void writeInfoFile(List<OrderPo> list);
+	public List<OrderPo> getOrders(int hotelId);
+	
+	/**
+	 * @param orderPo
+	 * @return	更新订单信息
+	 */
+	public boolean updateOrder(OrderPo orderPo);
+	
+	/**
+	 * @param orderPo
+	 * @return	添加订单
+	 */
+	public boolean addOrderPo(OrderPo orderPo);
+	
+	/**
+	 * @param orderId
+	 * @return	删除订单
+	 */
+	public boolean deleteOrderPo(int orderId);
 
 }

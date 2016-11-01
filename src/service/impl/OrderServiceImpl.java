@@ -6,19 +6,19 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import data.dao.DataFactory;
-import data.dao.impl.DataFactoryImpl;
-import data.service.OrderDataService;
-import data.service.impl.OrderDataServiceImpl;
+import data.dao.OrderDao;
+import data.dao.impl.OrderDaoImpl;
+import data.datahelper.DataFactory;
+import data.datahelper.impl.DataFactoryImpl;
 import po.OrderPo;
 import service.OrderService;
 
 public class OrderServiceImpl implements OrderService{
 	
-	private OrderDataService orderDataService;
+	private OrderDao orderDataService;
 	
 	public OrderServiceImpl(){
-		orderDataService = OrderDataServiceImpl.getInstance();
+		orderDataService = OrderDaoImpl.getInstance();
 	}
 
 	public List<OrderPo> getAllOrders(int hotelId) {

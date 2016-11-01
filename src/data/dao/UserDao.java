@@ -1,20 +1,19 @@
 package data.dao;
 
-import java.util.List;
-
 import po.UserPo;
 
 public interface UserDao {
 	
 	/**
-	 * @return	从数据文件中读取用户数据
+	 * @param userId
+	 * @return	获取用户信息
 	 */
-	public List<UserPo> readFromFile();
+	public UserPo getUser(int userId);
 	
 	/**
-	 * 向数据文件中写入用户数据
-	 * @param list
+	 * @param userPo
+	 * @return	更新用户信息
 	 */
-	public void writeInfoFile(List<UserPo> list);
+	public boolean updateUser(UserPo userPo);
 
 }

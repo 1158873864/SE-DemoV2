@@ -1,18 +1,18 @@
 package service.impl;
 
-import data.dao.DataFactory;
-import data.dao.impl.DataFactoryImpl;
-import data.service.UserDataService;
-import data.service.impl.UserDataServiceImpl;
+import data.dao.UserDao;
+import data.dao.impl.UserDaoImpl;
+import data.datahelper.DataFactory;
+import data.datahelper.impl.DataFactoryImpl;
 import po.UserPo;
 import service.UserService;
 
 public class UserServiceImpl implements UserService{
 	
-	private UserDataService userDataService;
+	private UserDao userDataService;
 	
 	public UserServiceImpl(){
-		userDataService = UserDataServiceImpl.getInstance();
+		userDataService = UserDaoImpl.getInstance();
 	}
 
 	public UserPo getUser(int userId) {
