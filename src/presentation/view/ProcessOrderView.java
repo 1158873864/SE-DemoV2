@@ -25,7 +25,7 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
-import presentation.controller.ProcessOrderViewController;
+import presentation.controller.ProcessOrderViewControllerImpl;
 import vo.OrderVo;
 
 public class ProcessOrderView extends JPanel{
@@ -35,7 +35,7 @@ public class ProcessOrderView extends JPanel{
 	//酒店编号，由上一级控制器传入，此处默认为1
 	private int hotelId = 1;
 	
-	private ProcessOrder processOrder;
+	private ProcessOrderViewControllerService processOrder;
 	
 	private JComboBox<String> orderTypeComboBox;
 	
@@ -59,7 +59,7 @@ public class ProcessOrderView extends JPanel{
 	
 	private JFrame delayFrame;
 	
-	public ProcessOrderView(ProcessOrderViewController controller){
+	public ProcessOrderView(ProcessOrderViewControllerImpl controller){
 		this.processOrder = controller;
 		this.setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
 		

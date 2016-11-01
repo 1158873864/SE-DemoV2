@@ -5,15 +5,15 @@ import java.util.List;
 
 import po.OrderPo;
 import po.UserPo;
-import presentation.view.ProcessOrder;
 import presentation.view.ProcessOrderView;
+import presentation.view.ProcessOrderViewControllerService;
 import service.OrderService;
 import service.UserService;
 import service.impl.OrderServiceImpl;
 import service.impl.UserServiceImpl;
 import vo.OrderVo;
 
-public class ProcessOrderViewController implements ProcessOrder{
+public class ProcessOrderViewControllerImpl implements ProcessOrderViewControllerService{
 	
 	private OrderService orderService;
 	
@@ -21,7 +21,7 @@ public class ProcessOrderViewController implements ProcessOrder{
 	
 	private ProcessOrderView view;
 	
-	public ProcessOrderViewController(){
+	public ProcessOrderViewControllerImpl(){
 		orderService = new OrderServiceImpl();
 		userService = new UserServiceImpl();
 	}

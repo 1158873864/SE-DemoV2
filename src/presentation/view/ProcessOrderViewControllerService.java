@@ -4,7 +4,7 @@ import java.util.List;
 
 import vo.OrderVo;
 
-public interface ProcessOrder {
+public interface ProcessOrderViewControllerService {
 	
 	public List<OrderVo> getAllOrders(int hotelId);
 	

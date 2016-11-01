@@ -3,7 +3,7 @@ package main;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import presentation.controller.ProcessOrderViewController;
+import presentation.controller.ProcessOrderViewControllerImpl;
 import presentation.view.ProcessOrderView;
 
 public class Main {
@@ -12,7 +12,7 @@ public class Main {
 		JFrame mFrame = new JFrame();
 		mFrame.setSize(800, 600);
 		mFrame.setLocation(300, 300);
-		ProcessOrderViewController controller = new ProcessOrderViewController();
+		ProcessOrderViewControllerImpl controller = new ProcessOrderViewControllerImpl();
 		ProcessOrderView view = new ProcessOrderView(controller);
 		controller.setView(view);
 		mFrame.getContentPane().add(view);
