@@ -37,7 +37,8 @@ public class OrderServiceImpl implements OrderService{
 	public List<OrderVo> getAllOrders(int hotelId) {
 		List<OrderVo> list = new ArrayList<OrderVo>();
 		for (OrderPo orderPo : hotelOrderList) {
-			OrderVo orderVo = parse(orderPo);
+			UserPo userPo = userDao.getUser(orderPo.getUserId());
+			OrderVo orderVo = new OrderVo(orderPo, userPo);
 			list.add(orderVo);
 		}
 		return list;
@@ -47,7 +48,8 @@ public class OrderServiceImpl implements OrderService{
 		List<OrderVo> list = new ArrayList<OrderVo>();
 		for (OrderPo orderPo : hotelOrderList) {
 			if(orderPo.getStatus() == 0){
-				OrderVo orderVo = parse(orderPo);
+				UserPo userPo = userDao.getUser(orderPo.getUserId());
+				OrderVo orderVo = new OrderVo(orderPo, userPo);
 				list.add(orderVo);
 			}
 		}
@@ -58,7 +60,8 @@ public class OrderServiceImpl implements OrderService{
 		List<OrderVo> list = new ArrayList<OrderVo>();
 		for (OrderPo orderPo : hotelOrderList) {
 			if(orderPo.getStatus() == 1){
-				OrderVo orderVo = parse(orderPo);
+				UserPo userPo = userDao.getUser(orderPo.getUserId());
+				OrderVo orderVo = new OrderVo(orderPo, userPo);
 				list.add(orderVo);
 			}
 		}
@@ -69,7 +72,8 @@ public class OrderServiceImpl implements OrderService{
 		List<OrderVo> list = new ArrayList<OrderVo>();
 		for (OrderPo orderPo : hotelOrderList) {
 			if(orderPo.getStatus() == 2){
-				OrderVo orderVo = parse(orderPo);
+				UserPo userPo = userDao.getUser(orderPo.getUserId());
+				OrderVo orderVo = new OrderVo(orderPo, userPo);
 				list.add(orderVo);
 			}
 		}
@@ -145,18 +149,7 @@ public class OrderServiceImpl implements OrderService{
 		}
 		return false;
 	}
-	
-	/**
-	 * @param orderPo
-	 * @return	将OrderPo转化为OrderVo
-	 */
-	private OrderVo parse(OrderPo orderPo){
-		int userId = orderPo.getUserId();
-		UserPo userPo = userDao.getUser(userId);
-		String userInfo = userPo.getUsername()+"("+userPo.getCredit()+")";
-		OrderVo orderVo = new OrderVo(orderPo,userInfo);
-		return orderVo;
-	}
+
 	
 
 }

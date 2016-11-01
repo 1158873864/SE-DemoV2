@@ -3,6 +3,7 @@ package vo;
 import java.util.Vector;
 
 import po.OrderPo;
+import po.UserPo;
 
 /**
  * orderNo		订单编号
@@ -15,7 +16,8 @@ import po.OrderPo;
  */
 public class OrderVo extends Vector<String>{
 	
-	public OrderVo(OrderPo orderPo,String userInfo){
+	public OrderVo(OrderPo orderPo,UserPo userPo){
+		String userInfo = userPo.getUsername()+"("+userPo.getCredit()+")";
 		this.add(String.valueOf(orderPo.getId()));
 		this.add(orderPo.getOrderInfo());
 		this.add(userInfo);
