@@ -6,24 +6,25 @@ import data.datahelper.DataFactory;
 import data.datahelper.impl.DataFactoryImpl;
 import po.UserPo;
 import service.UserService;
+import vo.UserVo;
 
 public class UserServiceImpl implements UserService{
 	
-	private UserDao userDataService;
+	private UserDao userDao;
 	
 	public UserServiceImpl(){
-		userDataService = UserDaoImpl.getInstance();
+		userDao = UserDaoImpl.getInstance();
 	}
 
-	public UserPo getUser(int userId) {
-		// TODO Auto-generated method stub
-		return userDataService.getUser(userId);
+	public UserVo getUser(int userId) {
+		UserPo userPo = userDao.getUser(userId);
+		return new UserVo(userPo);
 	}
 
 	public boolean addUserCredit(int userId,int credit) {
-		UserPo userPo = getUser(userId);
+		UserPo userPo = userDao.getUser(userId);
 		userPo.setCredit(userPo.getCredit()+credit);
-		return userDataService.updateUser(userPo);
+		return userDao.updateUser(userPo);
 	}
 
 }

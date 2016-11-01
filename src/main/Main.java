@@ -5,6 +5,7 @@ import javax.swing.JPanel;
 
 import presentation.controller.ProcessOrderViewControllerImpl;
 import presentation.view.ProcessOrderView;
+import presentation.view.ProcessOrderViewControllerService;
 
 public class Main {
 	
@@ -12,7 +13,8 @@ public class Main {
 		JFrame mFrame = new JFrame();
 		mFrame.setSize(800, 600);
 		mFrame.setLocation(300, 300);
-		ProcessOrderViewControllerImpl controller = new ProcessOrderViewControllerImpl();
+		int hotelId = 1;
+		ProcessOrderViewControllerService controller = new ProcessOrderViewControllerImpl(hotelId);
 		ProcessOrderView view = new ProcessOrderView(controller);
 		controller.setView(view);
 		mFrame.getContentPane().add(view);

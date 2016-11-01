@@ -2,9 +2,15 @@ package presentation.view;
 
 import java.util.List;
 
+import javax.swing.text.View;
+
 import vo.OrderVo;
 
 public interface ProcessOrderViewControllerService {
+	
+	public int getHotelId();
+	
+	public void setView(ProcessOrderView view);
 	
 	public List<OrderVo> getAllOrders(int hotelId);
 	
@@ -18,5 +24,9 @@ public interface ProcessOrderViewControllerService {
 	
 	public boolean processAbnormalOrder(int orderId,String delayTime);
 	
-	public void openDelayView(int orderNo);
+	public void updateListModel(String comboboxValue);
+	
+	public void processOrderButtonClicked();
+	
+	public void delayOrderButtonClicked();
 }

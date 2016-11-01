@@ -1,6 +1,7 @@
 package service;
 
 import po.UserPo;
+import vo.UserVo;
 
 public interface UserService {
 	
@@ -8,7 +9,7 @@ public interface UserService {
 	 * @param userId
 	 * @return	获取用户数据
 	 */
-	public UserPo getUser(int userId);
+	public UserVo getUser(int userId);
 	
 	/**
 	 * @param credit

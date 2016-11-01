@@ -1,10 +1,9 @@
 package presentation.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import po.OrderPo;
-import po.UserPo;
+import javax.swing.text.View;
+
 import presentation.view.ProcessOrderView;
 import presentation.view.ProcessOrderViewControllerService;
 import service.OrderService;
@@ -15,14 +14,17 @@ import vo.OrderVo;
 
 public class ProcessOrderViewControllerImpl implements ProcessOrderViewControllerService{
 	
+	private int hotelId;
+	
 	private OrderService orderService;
 	
 	private UserService userService;
 	
 	private ProcessOrderView view;
 	
-	public ProcessOrderViewControllerImpl(){
-		orderService = new OrderServiceImpl();
+	public ProcessOrderViewControllerImpl(int hotelId){
+		this.hotelId = hotelId;
+		orderService = new OrderServiceImpl(hotelId);
 		userService = new UserServiceImpl();
 	}
 	
@@ -30,20 +32,15 @@ public class ProcessOrderViewControllerImpl implements ProcessOrderViewControlle
 		this.view = view;
 	}
 	
+	public int getHotelId(){
+		return hotelId;
+	}
+	
 	/**
 	 * @return	获取酒店所有订单
 	 */
 	public List<OrderVo> getAllOrders(int hotelId){
-		List<OrderVo> list = new ArrayList<OrderVo>();
-		List<OrderPo> orderList = orderService.getAllOrders(hotelId);
-		for (OrderPo orderPo : orderList) {
-			int userId = orderPo.getUserId();
-			UserPo userPo = userService.getUser(userId);
-			String userInfo = userPo.getUsername()+"("+userPo.getCredit()+")";
-			OrderVo orderVo = new OrderVo(orderPo,userInfo);
-			list.add(orderVo);
-		}
-		return list;
+		return orderService.getAllOrders(hotelId);
 	}
 	
 	/**
@@ -51,16 +48,7 @@ public class ProcessOrderViewControllerImpl implements ProcessOrderViewControlle
 	 * @return	获取酒店未执行订单
 	 */
 	public List<OrderVo> getUnfinishedOrders(int hotelId){
-		List<OrderVo> list = new ArrayList<OrderVo>();
-		List<OrderPo> orderList = orderService.getUnfinishedOrders(hotelId);
-		for (OrderPo orderPo : orderList) {
-			int userId = orderPo.getUserId();
-			UserPo userPo = userService.getUser(userId);
-			String userInfo = userPo.getUsername()+"("+userPo.getCredit()+")";
-			OrderVo orderVo = new OrderVo(orderPo,userInfo);
-			list.add(orderVo);
-		}
-		return list;
+		return orderService.getUnfinishedOrders(hotelId);
 	}
 	
 	/**
@@ -68,16 +56,7 @@ public class ProcessOrderViewControllerImpl implements ProcessOrderViewControlle
 	 * @return	获取酒店已执行订单
 	 */
 	public List<OrderVo> getFinishedOrders(int hotelId){
-		List<OrderVo> list = new ArrayList<OrderVo>();
-		List<OrderPo> orderList = orderService.getFinishedOrders(hotelId);
-		for (OrderPo orderPo : orderList) {
-			int userId = orderPo.getUserId();
-			UserPo userPo = userService.getUser(userId);
-			String userInfo = userPo.getUsername()+"("+userPo.getCredit()+")";
-			OrderVo orderVo = new OrderVo(orderPo,userInfo);
-			list.add(orderVo);
-		}
-		return list;
+		return orderService.getFinishedOrders(hotelId);
 	}
 	
 	/**
@@ -85,16 +64,7 @@ public class ProcessOrderViewControllerImpl implements ProcessOrderViewControlle
 	 * @return	获取酒店异常订单
 	 */
 	public List<OrderVo> getAbnormalOrders(int hotelId){
-		List<OrderVo> list = new ArrayList<OrderVo>();
-		List<OrderPo> orderList = orderService.getAbnormalOrders(hotelId);
-		for (OrderPo orderPo : orderList) {
-			int userId = orderPo.getUserId();
-			UserPo userPo = userService.getUser(userId);
-			String userInfo = userPo.getUsername()+"("+userPo.getCredit()+")";
-			OrderVo orderVo = new OrderVo(orderPo,userInfo);
-			list.add(orderVo);
-		}
-		return list;
+		return orderService.getAbnormalOrders(hotelId);
 	}
 	
 	/**
@@ -102,11 +72,10 @@ public class ProcessOrderViewControllerImpl implements ProcessOrderViewControlle
 	 * @return	对未执行订单进行处理
 	 */
 	public boolean processUnfinishedOrder(int orderId){
-		OrderPo orderPo = orderService.getOrder(orderId);
 		if(orderService.finishOrder(orderId)){
-			int userId = orderPo.getUserId();
-			int credit = orderPo.getPrice();
-			return userService.addUserCredit(userId, credit);
+			int userId = orderService.getOrderUser(orderId);
+			int price = orderService.getOrderPrice(orderId);
+			return userService.addUserCredit(userId, price);
 		}
 		return false;
 		
@@ -118,25 +87,36 @@ public class ProcessOrderViewControllerImpl implements ProcessOrderViewControlle
 	 * @return	为异常订单办理延期入住
 	 */
 	public boolean processAbnormalOrder(int orderId,String delayTime){
-		OrderPo orderPo = orderService.getOrder(orderId);
 		if(orderService.delayOrder(orderId, delayTime)){
-			int userId = orderPo.getUserId();
-			int credit = orderPo.getPrice();
-			return userService.addUserCredit(userId, credit);
+			int userId = orderService.getOrderUser(orderId);
+			int price = orderService.getOrderPrice(orderId);
+			return userService.addUserCredit(userId, price);
 		}
 		return false;
 		
+	}
+	
+	/**
+	 * 更换列表数据源
+	 * @param comboboxValue
+	 */
+	public void updateListModel(String comboboxValue){
+		view.updateListModel(comboboxValue);
+	}
+	
+	/**
+	 * 处理订单按钮点击事件
+	 */
+	public void processOrderButtonClicked(){
+		view.processOrderButtonClicked();
 	}
 
 	/**
 	 * 打开订单延期界面
 	 */
-	public void openDelayView(int index) {
-		
-		view.openDelayView(index);
-		
+	public void delayOrderButtonClicked() {
+		view.delayOrderButtonClicked();
 	}
-	
-	
+
 	
 }

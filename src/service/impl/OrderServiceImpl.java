@@ -7,63 +7,95 @@ import java.util.Date;
 import java.util.List;
 
 import data.dao.OrderDao;
+import data.dao.UserDao;
 import data.dao.impl.OrderDaoImpl;
+import data.dao.impl.UserDaoImpl;
 import data.datahelper.DataFactory;
 import data.datahelper.impl.DataFactoryImpl;
 import po.OrderPo;
+import po.UserPo;
 import service.OrderService;
+import vo.OrderVo;
 
 public class OrderServiceImpl implements OrderService{
 	
-	private OrderDao orderDataService;
+	private int hotelId;
 	
-	public OrderServiceImpl(){
-		orderDataService = OrderDaoImpl.getInstance();
+	private List<OrderPo> hotelOrderList;
+	
+	private OrderDao orderDao;
+	
+	private UserDao userDao;
+	
+	public OrderServiceImpl(int hotelId){
+		this.hotelId = hotelId;
+		orderDao = OrderDaoImpl.getInstance();
+		userDao = UserDaoImpl.getInstance();
+		hotelOrderList = orderDao.getOrders(hotelId);
 	}
 
-	public List<OrderPo> getAllOrders(int hotelId) {
-		return orderDataService.getOrders(hotelId);
+	public List<OrderVo> getAllOrders(int hotelId) {
+		List<OrderVo> list = new ArrayList<OrderVo>();
+		for (OrderPo orderPo : hotelOrderList) {
+			OrderVo orderVo = parse(orderPo);
+			list.add(orderVo);
+		}
+		return list;
 	}
 
-	public List<OrderPo> getUnfinishedOrders(int hotelId) {
-		List<OrderPo> list = new ArrayList<OrderPo>();
-		List<OrderPo> orders = getAllOrders(hotelId);
-		for (OrderPo orderPo : orders) {
+	public List<OrderVo> getUnfinishedOrders(int hotelId) {
+		List<OrderVo> list = new ArrayList<OrderVo>();
+		for (OrderPo orderPo : hotelOrderList) {
 			if(orderPo.getStatus() == 0){
-				list.add(orderPo);
+				OrderVo orderVo = parse(orderPo);
+				list.add(orderVo);
 			}
 		}
 		return list;
 	}
 
-	public List<OrderPo> getFinishedOrders(int hotelId) {
-		List<OrderPo> list = new ArrayList<OrderPo>();
-		List<OrderPo> orders = getAllOrders(hotelId);
-		for (OrderPo orderPo : orders) {
+	public List<OrderVo> getFinishedOrders(int hotelId) {
+		List<OrderVo> list = new ArrayList<OrderVo>();
+		for (OrderPo orderPo : hotelOrderList) {
 			if(orderPo.getStatus() == 1){
-				list.add(orderPo);
+				OrderVo orderVo = parse(orderPo);
+				list.add(orderVo);
 			}
 		}
 		return list;
 	}
 
-	public List<OrderPo> getAbnormalOrders(int hotelId) {
-		List<OrderPo> list = new ArrayList<OrderPo>();
-		List<OrderPo> orders = getAllOrders(hotelId);
-		for (OrderPo orderPo : orders) {
+	public List<OrderVo> getAbnormalOrders(int hotelId) {
+		List<OrderVo> list = new ArrayList<OrderVo>();
+		for (OrderPo orderPo : hotelOrderList) {
 			if(orderPo.getStatus() == 2){
-				list.add(orderPo);
+				OrderVo orderVo = parse(orderPo);
+				list.add(orderVo);
 			}
 		}
 		return list;
 	}
 
-	public OrderPo getOrder(int orderId) {
-		return orderDataService.getOrder(orderId);
+	public int getOrderUser(int orderId) {
+		for (OrderPo orderPo : hotelOrderList) {
+			if(orderPo.getId() == orderId){
+				return orderPo.getUserId();
+			}
+		}
+		return -1;
+	}
+
+	public int getOrderPrice(int orderId) {
+		for (OrderPo orderPo : hotelOrderList) {
+			if(orderPo.getId() == orderId){
+				return orderPo.getPrice();
+			}
+		}
+		return -1;
 	}
 
 	public boolean finishOrder(int orderId) {
-		OrderPo orderPo = orderDataService.getOrder(orderId);
+		OrderPo orderPo = orderDao.getOrder(orderId);
 		if(orderPo != null){
 			//检查订单状态是否为未执行
 			if(orderPo.getStatus() == 0){
@@ -75,7 +107,15 @@ public class OrderServiceImpl implements OrderService{
 				String time=format.format(date);
 				orderPo.setEntryTime(time);
 				//修改订单
-				return orderDataService.updateOrder(orderPo);
+				if(orderDao.updateOrder(orderPo)){
+					for (OrderPo o : hotelOrderList) {
+						if(o.getId() == orderId){
+							o = orderPo;
+							break;
+						}
+					}
+					return true;
+				}
 				
 			}
 		}
@@ -83,7 +123,7 @@ public class OrderServiceImpl implements OrderService{
 	}
 
 	public boolean delayOrder(int orderId, String delayTime) {
-		OrderPo orderPo = orderDataService.getOrder(orderId);
+		OrderPo orderPo = orderDao.getOrder(orderId);
 		if(orderPo != null){
 			//检查订单状态是否为异常订单
 			if(orderPo.getStatus() == 2){
@@ -92,10 +132,30 @@ public class OrderServiceImpl implements OrderService{
 				//修改订单最晚执行时间
 				orderPo.setLastTime(delayTime);
 				//修改订单
-				return orderDataService.updateOrder(orderPo);
+				if(orderDao.updateOrder(orderPo)){
+					for (OrderPo o : hotelOrderList) {
+						if(o.getId() == orderId){
+							o = orderPo;
+							break;
+						}
+					}
+					return true;
+				}
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * @param orderPo
+	 * @return	将OrderPo转化为OrderVo
+	 */
+	private OrderVo parse(OrderPo orderPo){
+		int userId = orderPo.getUserId();
+		UserPo userPo = userDao.getUser(userId);
+		String userInfo = userPo.getUsername()+"("+userPo.getCredit()+")";
+		OrderVo orderVo = new OrderVo(orderPo,userInfo);
+		return orderVo;
 	}
 	
 
